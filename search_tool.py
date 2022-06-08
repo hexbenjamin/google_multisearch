@@ -1,3 +1,4 @@
+import sys
 import webbrowser
 
 
@@ -37,7 +38,7 @@ def site_list_format(fp: str):
     return sites_list
 
 
-def construct_link(query: str, links_file: str, engine: str):
+def construct_link(query: str, links_file='scope.txt', engine='google'):
     prefix, add_site, or_str = engine_dict[engine]
     scope = site_list_format(links_file)
 
@@ -59,5 +60,23 @@ def construct_link(query: str, links_file: str, engine: str):
     return out_link
 
 
-result = construct_link("arrested development", "scope.txt", "google")
-print(result)
+print("welcome to HEX BENJAMIN's multi_search.")
+
+# print("what search engine would you like to use for the operation?")
+# engine = input('>>')
+
+print("multi_search will load scope links from 'scope.txt' by default.")
+print("press [Enter] to continue, or specify the path to a different .txt file.")
+custom_scope = input('>> ')
+
+print("now, what are we searching for? input your query below.")
+user_query = input('>> ')
+
+if custom_scope != "":
+    output = construct_link(user_query, custom_scope)
+else:
+    output = construct_link(user_query)
+
+input(f"press any key to start a search for '{user_query}'.")
+webbrowser.open(output)
+sys.exit(0)
