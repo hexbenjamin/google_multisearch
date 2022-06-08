@@ -5,8 +5,10 @@ def link_substitute(link):
     esc_char = "%25"
     for char in link:
         if char == ":":
-            char == esc_char + "3A"
-        
+            char = esc_char + "3A"
+        elif char == "/":
+            char = esc_char + "2F"
+
         out_str += char
     
     return out_str
