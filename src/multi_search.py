@@ -1,11 +1,20 @@
+import os
 import sys
 import webbrowser
 
 
 engine_dict = {
     "key": ["search_prefix", "site_specifier", "or_operand"],
-    "google": ["https://www.google.com/search?q=", "site%3A", "+OR+"]
+    "google": ["https://www.google.com/search?", "site%3A", "+OR+"]
 }
+
+def scope_reader(fp: str):
+    scope_list = []
+    with open(fp, 'r') as list_file:
+        in_list = list_file.readlines()
+        for site in in_list:
+            scope_list.append(site.strip())
+    return scope_list
 
 
 def link_substitute(link: str):
@@ -28,26 +37,30 @@ def link_substitute(link: str):
     
     return out_str
 
-def site_list_format(fp: str):
-    sites_list = []
-    with open(fp, 'r') as list_file:
-        in_list = list_file.readlines()
-        for site in in_list:
-            formatted = link_substitute(site.strip())
-            sites_list.append(formatted)
-    return sites_list
+def scope_format(fp: str):
+    in_list = scope_reader(fp)
+    scope_list = []
+    for site in in_list:
+            formatted = link_substitute(site)
+            scope_list.append(formatted)
+    return scope_list
 
-def construct_link(query: str, links_file='scope.txt', engine='google'):
+def construct_link(query: str, scope_file='scope.txt', engine='google', mode='std'):
     prefix, add_site, or_str = engine_dict[engine]
-    scope = site_list_format(links_file)
+    
+    if mode == 'img':
+        prefix += "tbm=isch&"
 
-    valid_query = ""
+    scope = scope_format(scope_file)
+
+    validated_query = ""
     for letter in query:
         if letter == " ":
             letter = "+"
-        valid_query += letter
+        validated_query += letter
+    validated_query = "q=" + validated_query
     
-    out_link = prefix + valid_query + "+"
+    out_link = prefix + validated_query + "+"
     
     for i in range(len(scope)):
         current_link = scope[i]
@@ -58,24 +71,30 @@ def construct_link(query: str, links_file='scope.txt', engine='google'):
     
     return out_link
 
+def main():
+    print("welcome to HEX BENJAMIN's multi_search.")
 
-print("welcome to HEX BENJAMIN's multi_search.")
+    # print("what search engine would you like to use for the operation?")
+    # engine = input('>>')
 
-# print("what search engine would you like to use for the operation?")
-# engine = input('>>')
+    engine = "google"
 
-print("multi_search will load scope links from 'scope.txt' by default.")
-print("press [Enter] to continue, or specify the path to a different .txt file.")
-custom_scope = input('>> ')
+    print("multi_search will load scope links from 'scope.txt' by default.")
+    print("press [Enter] to continue, or specify the path to a different .txt file.")
+    custom_scope = input('>> ')
 
-print("now, what are we searching for? input your query below.")
-user_query = input('>> ')
+    print("now, what are we searching for? input your query below.")
+    user_query = input('>> ')
 
-if custom_scope != "":
-    output = construct_link(user_query, custom_scope)
-else:
-    output = construct_link(user_query)
+    if custom_scope != "":
+        output = construct_link(user_query, custom_scope)
+    else:
+        output = construct_link(user_query)
 
-input(f"press any key to start a search for '{user_query}'.")
-webbrowser.open(output)
-sys.exit(0)
+    input(f"press [Enter] to start a search for '{user_query}'.")
+
+    webbrowser.open(output)
+    sys.exit(0)
+
+if __name__ == "__main__":
+    main()
