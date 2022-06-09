@@ -37,7 +37,6 @@ def site_list_format(fp: str):
             sites_list.append(formatted)
     return sites_list
 
-
 def construct_link(query: str, links_file='scope.txt', engine='google'):
     prefix, add_site, or_str = engine_dict[engine]
     scope = site_list_format(links_file)
