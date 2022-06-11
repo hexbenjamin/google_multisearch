@@ -1,5 +1,20 @@
+# define custom scope sets here
+
+# formatting:
+# SET HEADER | "~X:Label" (where X is a sequential integer starting from 0)
+# LINKS | self-explanatory, one per line. links are expected to begin with "h" due to http:// prefix.
+# END LINE | "end" written on its own line signifies the end of the set, beginning with the last SET HEADER. 
+
+~0:3DP
 https://www.thingiverse.com/
 https://www.myminifactory.com/
 https://cults3d.com/
 https://www.printables.com/
 https://thangs.com/
+end
+
+~1:Stock Photos
+https://unsplash.com/photos/
+https://www.pexels.com/photo/
+https://pixabay.com/photos/
+end
