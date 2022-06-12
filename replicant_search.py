@@ -33,20 +33,41 @@ def construct_link(query: str, scope_set: int, engine: str):
     return search_link
 
 
+def validate(input: str, check: list):
+    if input.endswith('?'):
+        return 3
+    else:
+        try:
+            user_in = int(input)
+            if user_in in range(len(check)):
+                # SUCCESS
+                return 0
+            else:
+                # RANGE ERROR
+                return 2
+        except:
+            # TYPE ERROR
+            return 1
+
+
 def validated_input(check: list):
     while True:
         user_in = exit_check(input('>> '))
-        
-        try:
-            user_in = int(user_in)
-            if user_in in range(len(check)):
-                break
-            else:
-                print(make_error() + ' not in range. make sure to select a number included in the list!')
-        except:
+        if validate(user_in, check) == 0:
+            return int(user_in)
+        elif validate(user_in, check) == 1:
             print(make_error() + 'not an integer. make sure to select a number, and not a label!')
-    
-    return user_in
+        elif validate(user_in, check) == 2:
+            print(make_error() + 'not in range. make sure to select a number included in the list!')
+        elif validate(user_in, check) == 3:
+            list_set_links(int(user_in.strip(" ?")), check)
+
+
+def list_set_links(id: int, scope_list: list):
+    links = scope_list[id][2]
+    for entry in links:
+        entry = color_link(entry)
+        print(f'> {entry}')
 
 
 # color shortcuts
@@ -56,6 +77,10 @@ def color_progress(label: str):
 
 def color_options(options: str):
     return txt_color(options, fg='yn')
+
+
+def color_link(link: str):
+    return txt_color(link, fg='bb')
 
 
 def make_error():
@@ -87,12 +112,11 @@ def main():
     
     options = ""
     for i in range(len(engine_list)):
-        entry = f'{i}={engine_list[i]}'
+        entry = f'{i}:{engine_list[i]}'
         if i != len(engine_list) - 1:
             entry += ' / '
         
         options += entry
-    
     
     print(color_options(f'[{options}]'))
 
@@ -105,11 +129,11 @@ def main():
 
     # print("replicant_search loads links from 'scope.txt'.")
     print("the following scope sets were found. please select one by its numerical ID to proceed.")
-    # print(make_note() + " add a ? after any set ID to list the links it contains.")
+    print(make_note() + " add a ? after any set ID to list the links it contains.")
 
     options = ""
     for i in range(len(scope_list)):
-        entry = f'{scope_list[i][0]}={scope_list[i][1]}'
+        entry = f'{scope_list[i][0]}:{scope_list[i][1]}'
         if i != len(engine_list) - 1:
             entry += ' / '
         
@@ -120,7 +144,7 @@ def main():
     selected_set = validated_input(scope_list)
     selected_set = scope_list[selected_set][2]
     
-    set_links = scope.set_format(selected_set)
+    set_links = scope.format_set(selected_set)
     
     ### QUERY SELECT
     print('---\n' + color_progress('[3/3]') + ' : query_input')
@@ -143,3 +167,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# txt = txt_reader.make_list('scopes.txt')
+# scopes = scope.make_list(txt)
+# scope.list_set_links(0, scopes)

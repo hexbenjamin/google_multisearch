@@ -27,7 +27,7 @@ def make_list(txt_list: list):
     return out_list
 
 
-def set_format(input_set: list):
+def format_set(input_set: list):
     # RETURNS:
     # LIST of *FORMATTED* STR links
     
