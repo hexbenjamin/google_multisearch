@@ -33,19 +33,56 @@ def construct_link(query: str, scope_set: int, engine: str):
     return search_link
 
 
+def validated_input(check: list):
+    while True:
+        user_in = exit_check(input('>> '))
+        
+        try:
+            user_in = int(user_in)
+            if user_in in range(len(check)):
+                break
+            else:
+                print(make_error() + ' not in range. make sure to select a number included in the list!')
+        except:
+            print(make_error() + 'not an integer. make sure to select a number, and not a label!')
+    
+    return user_in
+
+
+# color shortcuts
+def color_progress(label: str):
+    return txt_color(label, fg='mn', bg='wn')
+
+
+def color_options(options: str):
+    return txt_color(options, fg='yn')
+
+
+def make_error():
+    return txt_color("ERROR!", fg='wb', bg='rb') + " "
+
+
+def make_note():
+    return txt_color("NOTE:", fg='wb', bg='cb') + " "
+
+
+# begin!
 def main():
     colorama_init()
-
-    print('welcome to ' + txt_color('REPLICANT_SEARCH', bg='gb') + '.')
-    print(txt_color('developed with love (& little experience) by ', 'wd') + txt_color('HEX BENJAMIN', 'bn') + '.')
+    
+    prog_name = txt_color('REPLICANT_SEARCH', bg='gb')
+    dev_name = txt_color('HEX BENJAMIN', 'bb')
+    
+    print('welcome to ' + prog_name + '.')
+    print('developed with love (& little experience) by ' + dev_name + '.')
     
     txt = txt_reader.make_list('scopes.txt')
     scope_list = scope.make_list(txt)
     engine_list = list(engine_dict.keys())
 
-    print('---\n[1/] engine_select')
-
     ### ENGINE SELECT
+    print('---\n' + color_progress('[1/3]') + ' : engine_select')
+
     print("please select a search engine to utilize from the following list, by its numerical ID: ")
     
     options = ""
@@ -56,25 +93,20 @@ def main():
         
         options += entry
     
-    while True:
-        engine_id = exit_check(input(f'[{options}]\n>> '))
-        
-        try:
-            engine_id = int(engine_id)
-            if engine_id in range(len(engine_list)):
-                break
-            else:
-                print('error: not in range. make sure to select a number included in the list!')
-        except:
-            print('error: not an integer. make sure to select a number, and not a label!')
+    
+    print(color_options(f'[{options}]'))
+
+    engine_id = validated_input(engine_list)
     
     engine = engine_list[engine_id]
 
-    print('---\n[2/] set_select')
-
     ### SET SELECT
-    print("replicant_search loads links from 'scope.txt'.")
-    print("the following scope sets were found. please select one by its numerical ID to proceed.\n[*] add a ? after any set ID to list the links it contains.")
+    print('---\n' + color_progress('[2/3]') + ' : set_select')
+
+    # print("replicant_search loads links from 'scope.txt'.")
+    print("the following scope sets were found. please select one by its numerical ID to proceed.")
+    # print(make_note() + " add a ? after any set ID to list the links it contains.")
+
     options = ""
     for i in range(len(scope_list)):
         entry = f'{scope_list[i][0]}={scope_list[i][1]}'
@@ -83,27 +115,26 @@ def main():
         
         options += entry
     
-    while True:
-        selected_set = exit_check(input(f'[{options}]\n>> '))
-        try:
-            selected_set = int(selected_set)
-            if selected_set in range(len(scope_list)):
-                break
-            else:
-                print('error: not in range. make sure to select a number included in the list!')
-        except:
-            print('error: not an integer. make sure to select a number, and not a label!')
-    
-    set_links = scope.set_format(scope_list[selected_set][2])
+    print(color_options(f'[{options}]'))
 
+    selected_set = validated_input(scope_list)
+    selected_set = scope_list[selected_set][2]
+    
+    set_links = scope.set_format(selected_set)
+    
     ### QUERY SELECT
-    print("now, what are we searching for? input your query below, and press [Enter] to search.")
+    print('---\n' + color_progress('[3/3]') + ' : query_input')
+
+    print("now, what are we searching for? input your query below, and press " + color_options('[Enter]') + " to search.")
     user_query = exit_check(input('>> '))
 
     search_link = construct_link(user_query, set_links, engine)
 
     webbrowser.open(search_link)
     
+    ### END/RESTART
+    print('---\n')
+
     restart = input("begin another search? [Y=restart, !Y=exit]\n")
     if restart.upper() == 'Y':
         main()
