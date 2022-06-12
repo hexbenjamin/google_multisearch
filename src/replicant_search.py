@@ -74,9 +74,8 @@ def main():
     user_query = input('>> ')
 
     search_link = construct_link(user_query, set_links, engine)
-    print(search_link)
 
-    webbrowser.open(output)
+    webbrowser.open(search_link)
     sys.exit(0)
 
 if __name__ == "__main__":
