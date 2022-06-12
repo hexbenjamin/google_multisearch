@@ -1,19 +1,10 @@
-import re
+### REPLICANT_SEARCH - SCOPE PROCESSING FUNCTIONS
 
-
-def reader(fp: str):
+def make_list(txt_list: list):
     # RETURNS:
     # LIST of [id: int, label: str, links: list] LISTS
 
     out_list = []
-
-    txt_list = []
-    with open(fp, 'r') as scope_file:
-        for line in scope_file:
-            if not line.isspace() and not line.startswith('#'):
-                current = line.strip()
-                txt_list.append(current)
-
     temp_list = []
     labels = []
     for entry in txt_list:
@@ -59,11 +50,3 @@ def set_format(input_set: list):
     
     return formatted_list
 
-
-# print(reader('scope.txt'))
-
-# selected = set_select(split_list, 1)
-# print(selected)
-
-# formatted = set_format(selected)
-# print(formatted)
