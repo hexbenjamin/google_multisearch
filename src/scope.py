@@ -1,3 +1,4 @@
+from posixpath import split
 import re
 
 
@@ -8,26 +9,31 @@ engine_dict = {
 
 # print(engine_dict[0][0]) // print engine name, e.g.
 
-def link_format(link: str):
-    out_str = ""
+def set_format(input_set: list):
+    formatted_list = []
+    for link in input_set:
+        out_str = ""
     
-    ## determined this to be unnecessary:
-    # esc_char = "%25"
-    
-    for char in link:
-        if char == ":":
-            char = "%3A"
-        elif char == "/":
-            char = "%2F"
+        ## determined this to be unnecessary:
+        # esc_char = "%25"
+        
+        for char in link:
+            if char == ":":
+                char = "%3A"
+            elif char == "/":
+                char = "%2F"
 
-        out_str += char
+            out_str += char
+        
+        formatted_list.append(out_str)
     
-    return out_str
+    return formatted_list
 
 
 def reader(fp: str):
-    scope_dict = {}
-    
+    # RETURNS:
+    # LIST of (set_id: INT, link: STR) TUPLES
+
     txt_list = []
     with open(fp, 'r') as scope_file:
         for line in scope_file:
@@ -43,42 +49,23 @@ def reader(fp: str):
     return split_list
 
 
-out = reader('scope.txt')
-print(out)
-'''
-def reader(fp: str, set: int):
-    scope_list = []
-    temp_list = []
+def set_select(split_list: list, set_id: int):
+    # RETURNS:
+    # LIST of STR links
+    
+    set_list = []
 
-    with open(fp, 'r') as scope_file:
-        for line in scope_file:
-            current = line.strip()
-            if not current.startswith("#"):
-                if current.startswith("~"):
-                    set_id, set_label = re.split(":", current)
-                    set_id = int(set_id[1:])
-                
-                if current.startswith("h"):
-                    current = link_format(current)
-                    temp_list.append(current)
+    for entry in split_list:
+        if int(entry[0]) == set_id:
+            set_list.append(entry[1])
 
-                if current == "end":
-                    scope_list.append([(set_id, set_label), temp_list])
-                    temp_list.clear()
-                
-    return scope_list
-'''
+    return set_list
 
-'''
-def select(scope_list=list, id=int):
-    selected = scope_list[id]
-    selected_label = str(id) + ":" + selected[0][1]
-    selected_links = selected[1]
-    return selected_label, selected_links
-'''
 
-# t_scope_list = reader('scope.txt')
-# print(t_scope_list)
+split_list = reader('scope.txt')
 
-# entry = '1|https://unsplash.com/photos/'
-# id = int(id)
+selected = set_select(split_list, 1)
+print(selected)
+
+formatted = set_format(selected)
+print(formatted)
