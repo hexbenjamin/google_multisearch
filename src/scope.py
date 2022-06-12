@@ -3,7 +3,9 @@ import re
 
 def reader(fp: str):
     # RETURNS:
-    # LIST of (set_id: INT, link: STR) TUPLES
+    # LIST of [id: int, label: str, links: list] LISTS
+
+    out_list = []
 
     txt_list = []
     with open(fp, 'r') as scope_file:
@@ -12,25 +14,26 @@ def reader(fp: str):
                 current = line.strip()
                 txt_list.append(current)
 
-    split_list = []
+    temp_list = []
+    labels = []
     for entry in txt_list:
-        id, link = entry.split('|')
-        split_list.append((id, link))
+        if '|' in entry:
+            id, link = entry.split('|')
+        
+            if link.startswith('#'):
+                label = link.strip('#')
+                labels.append((id, label))
+            else:
+                temp_list.append((id, link))
 
-    return split_list
+    for e in labels:
+        id = e[0]
+        label = e[1]
+        set_links = [x[1] for x in temp_list if x[0] == id]
 
+        out_list.append([id, label, set_links])
 
-def set_select(split_list: list, set_id: int):
-    # RETURNS:
-    # LIST of STR links
-    
-    set_list = []
-
-    for entry in split_list:
-        if int(entry[0]) == set_id:
-            set_list.append(entry[1])
-
-    return set_list
+    return out_list
 
 
 def set_format(input_set: list):
@@ -57,7 +60,7 @@ def set_format(input_set: list):
     return formatted_list
 
 
-# split_list = reader('scope.txt')
+# print(reader('scope.txt'))
 
 # selected = set_select(split_list, 1)
 # print(selected)
