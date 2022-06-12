@@ -2,8 +2,8 @@ import re
 
 
 engine_dict = {
-    "key": ["name", "sequence", "i : imgs_str", "o : or_str", "P: prefix", "Q : q_prefix", "S : site_spec"],
-    0: ["google", "PiQSo", "tbm=isch&", "+OR+", "https://www.google.com/search?", "q=", "+site%3A"]
+    "key": ["sequence", "i : imgs_str", "o : or_str", "P: prefix", "Q : q_prefix", "S : site_spec"],
+    0: ["PiQSo", "tbm=isch&", "+OR+", "https://www.google.com/search?", "q=", "+site%3A"]
 }
 
 # print(engine_dict[0][0]) // print engine name, e.g.
@@ -25,7 +25,28 @@ def link_format(link: str):
     return out_str
 
 
-def reader(fp='scope.txt'):
+def reader(fp: str):
+    scope_dict = {}
+    
+    txt_list = []
+    with open(fp, 'r') as scope_file:
+        for line in scope_file:
+            if not line.isspace() and not line.startswith('#'):
+                current = line.strip()
+                txt_list.append(current)
+
+    split_list = []
+    for entry in txt_list:
+        id, link = entry.split('|')
+        split_list.append((id, link))
+
+    return split_list
+
+
+out = reader('scope.txt')
+print(out)
+'''
+def reader(fp: str, set: int):
     scope_list = []
     temp_list = []
 
@@ -34,7 +55,6 @@ def reader(fp='scope.txt'):
             current = line.strip()
             if not current.startswith("#"):
                 if current.startswith("~"):
-                    temp_list.clear()
                     set_id, set_label = re.split(":", current)
                     set_id = int(set_id[1:])
                 
@@ -44,17 +64,21 @@ def reader(fp='scope.txt'):
 
                 if current == "end":
                     scope_list.append([(set_id, set_label), temp_list])
+                    temp_list.clear()
                 
-    
     return scope_list
+'''
 
-
+'''
 def select(scope_list=list, id=int):
     selected = scope_list[id]
     selected_label = str(id) + ":" + selected[0][1]
     selected_links = selected[1]
     return selected_label, selected_links
+'''
 
+# t_scope_list = reader('scope.txt')
+# print(t_scope_list)
 
-test_reader = reader()
-label, links = select(test_reader, 0)
+# entry = '1|https://unsplash.com/photos/'
+# id = int(id)
