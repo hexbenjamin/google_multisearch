@@ -1,36 +1,35 @@
+### replicant_search:main
+
+#! ++ imports
+
 # import project modules
-from colorizer import txt_color, colorama_init
-import scope
-import txt_reader
+from res.util.colorizer import txt_color, colorama_init
+import res.scope.tools as scopetools
+import res.util.txt_reader as txt_reader
 
 # import system modules
 import sys
+import os
 import webbrowser
+
+# -- imports
+
+cwd = os.getcwd()
+scopefile = os.path.join(cwd, 'scopes.txt')
 
 engine_dict = {
     "google": "https://www.google.com/search?q=^+site%3A^+OR+",
     "google_img": "https://www.google.com/search?tbm=isch&q=^+site%3A^+OR+"
 }
 
+#! ++ functions
+
+## ++ util
 def exit_check(input: str):
     if input.lower() == "exit":
         sys.exit(2)
     else:
         return input
-
-
-def construct_link(query: str, scope_set: int, engine: str):
-    search_prefix, site_spec, or_str = engine_dict[engine].split('^')
-    
-    search_link = search_prefix + query
-
-    for i in range(len(scope_set)):
-        if len(scope_set) - 1 != i:
-            search_link += site_spec + scope_set[i] + or_str
-        else:
-            search_link += site_spec + scope_set[i]
-    
-    return search_link
 
 
 def validate(input: str, check: list):
@@ -63,6 +62,22 @@ def validated_input(check: list):
             list_set_links(int(user_in.strip(" ?")), check)
 
 
+## -- util
+
+def construct_link(query: str, scope_set: int, engine: str):
+    search_prefix, site_spec, or_str = engine_dict[engine].split('^')
+    
+    search_link = search_prefix + query
+
+    for i in range(len(scope_set)):
+        if len(scope_set) - 1 != i:
+            search_link += site_spec + scope_set[i] + or_str
+        else:
+            search_link += site_spec + scope_set[i]
+    
+    return search_link
+
+
 def list_set_links(id: int, scope_list: list):
     links = scope_list[id][2]
     for entry in links:
@@ -70,7 +85,7 @@ def list_set_links(id: int, scope_list: list):
         print(f'> {entry}')
 
 
-# color shortcuts
+## ++ color_shortcuts
 def color_progress(label: str):
     return txt_color(label, fg='mn', bg='wn')
 
@@ -91,6 +106,10 @@ def make_note():
     return txt_color("NOTE:", fg='wb', bg='cb') + " "
 
 
+## -- color_shortcuts
+
+# -- functions
+
 # begin!
 def main():
     colorama_init()
@@ -101,12 +120,14 @@ def main():
     print('welcome to ' + prog_name + '.')
     print('developed with love (& little experience) by ' + dev_name + '.')
     
-    txt = txt_reader.make_list('scopes.txt')
-    scope_list = scope.make_list(txt)
+    div_str = '———\n'
+
+    txt = txt_reader.make_list(scopefile)
+    scope_list = scopetools.make_list(txt)
     engine_list = list(engine_dict.keys())
 
-    ### ENGINE SELECT
-    print('---\n' + color_progress('[1/3]') + ' : engine_select')
+    ## ++ engine_select
+    print(div_str + color_progress('[1/3]') + ' : engine_select')
 
     print("please select a search engine to utilize from the following list, by its numerical ID: ")
     
@@ -124,8 +145,10 @@ def main():
     
     engine = engine_list[engine_id]
 
-    ### SET SELECT
-    print('---\n' + color_progress('[2/3]') + ' : set_select')
+    ## -- engine_select
+
+    ## ++ set_select
+    print(div_str + color_progress('[2/3]') + ' : set_select')
 
     # print("replicant_search loads links from 'scope.txt'.")
     print("the following scope sets were found. please select one by its numerical ID to proceed.")
@@ -144,10 +167,12 @@ def main():
     selected_set = validated_input(scope_list)
     selected_set = scope_list[selected_set][2]
     
-    set_links = scope.format_set(selected_set)
+    set_links = scopetools.format_set(selected_set)
     
-    ### QUERY SELECT
-    print('---\n' + color_progress('[3/3]') + ' : query_input')
+    ## -- set_select
+
+    ## ++ query_select
+    print(div_str + color_progress('[3/3]') + ' : query_input')
 
     print("now, what are we searching for? input your query below, and press " + color_options('[Enter]') + " to search.")
     user_query = exit_check(input('>> '))
@@ -156,18 +181,16 @@ def main():
 
     webbrowser.open(search_link)
     
+    ## -- query_select
+
     ### END/RESTART
-    print('---\n')
+    print(div_str)
 
     restart = input("begin another search? [Y=restart, !Y=exit]\n")
     if restart.upper() == 'Y':
         main()
     else:
-        sys.exit(0)
+        exit(0)
 
 if __name__ == "__main__":
     main()
-
-# txt = txt_reader.make_list('scopes.txt')
-# scopes = scope.make_list(txt)
-# scope.list_set_links(0, scopes)
