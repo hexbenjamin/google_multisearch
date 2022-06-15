@@ -210,13 +210,8 @@ def main():
     ## -- query_select
 
     ### END/RESTART
-    print(div_str)
-
-    restart = input("begin another search? [Y=restart, !Y=exit]\n")
-    if restart.upper() == 'Y':
-        main()
-    else:
-        exit(0)
+    os.system('cls' if os.name == 'nt' else 'clear')
+    main()
 
 if __name__ == "__main__":
     main()
