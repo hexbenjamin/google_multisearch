@@ -4,7 +4,7 @@
             "README.md",
             "replicant_search.exe",
             "replicant_search.py",
-            "scopes.txt"
+            "scopes.json"
         ],
         "dirs": [
             "res"

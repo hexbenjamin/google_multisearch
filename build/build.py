@@ -11,21 +11,16 @@ def build_exe():
         "-n=replicant_search",
         "--onefile",
         "--console",
-        "--distpath=/",
-        "--workpath=/tmp"
+        "--distpath=/DEV/python/replicant_search",
+        "--workpath=/DEV/python/replicant_search/tmp"
     ]
 
     PyInstaller.__main__.run(flags)
 
-
-build_dir = os.getcwd()
-# print(build_dir)
-root_dir = os.path.dirname(build_dir)
-# print(root_dir)
+root_dir = os.getcwd()
+build_dir = os.path.join(root_dir, 'build')
 includes = os.path.join(build_dir, 'include.json')
-# print(includes)
 
-os.chdir(root_dir)
 build_exe()
 
 os.chdir(build_dir)
@@ -46,12 +41,6 @@ if os.path.exists(zip_name):
 
 zip_path = os.path.join(build_dir, zip_name)
 
-# for dirname, subdirs, files in os.walk(root_dir):
-#     rel_dirname = os.path.relpath(dirname, root_dir)
-
-# !for x in Path.iterdir(Path(root_dir)):
-#     !print(x)
-
 root_path = Path(root_dir)
 
 with zipfile.ZipFile(zip_path, mode='w') as archive:
@@ -61,11 +50,11 @@ with zipfile.ZipFile(zip_path, mode='w') as archive:
         if path.name in inc_files and path.name not in exc_files:
             archive.write(
                 path,
-                arcname=target_path
+                arcname=rel_path
             )
         elif path.parent.name in inc_dirs and path.parent.name not in exc_dirs:
             archive.write(
                 path,
-                arcname=target_path
+                arcname=rel_path
             )
     archive.close()
