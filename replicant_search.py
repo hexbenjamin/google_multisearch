@@ -3,23 +3,21 @@
 #! ++ imports
 
 # import project modules
-from res.util.colorizer import txt_color, colorama_init
-import res.scope.tools as scopetools
-import res.util.txt_reader as txt_reader
+from res.colorizer import txt_color, colorama_init
 
 # import system modules
-import sys
+import json
 import os
+import sys
 import webbrowser
 
 # -- imports
 
 cwd = os.getcwd()
-scopefile = os.path.join(cwd, 'scopes.txt')
 
 engine_dict = {
     "google": "https://www.google.com/search?q=^+site%3A^+OR+",
-    "google_img": "https://www.google.com/search?tbm=isch&q=^+site%3A^+OR+"
+    "google_img": "https://www.google.com/search?tbm=isch&q=^+site%3A^+OR"
 }
 
 #! ++ functions
@@ -64,6 +62,29 @@ def validated_input(check: list):
 
 ## -- util
 
+def format_set(input_set: list):
+    # RETURNS:
+    # LIST of *FORMATTED* STR links
+    
+    formatted_list = []
+    for link in input_set:
+        out_str = ""
+    
+        ## determined this to be unnecessary:
+        # esc_char = "%25"
+        
+        for char in link:
+            if char == ":":
+                char = "%3A"
+            elif char == "/":
+                char = "%2F"
+
+            out_str += char
+        
+        formatted_list.append(out_str)
+    
+    return formatted_list
+
 def construct_link(query: str, scope_set: int, engine: str):
     search_prefix, site_spec, or_str = engine_dict[engine].split('^')
     
@@ -79,7 +100,7 @@ def construct_link(query: str, scope_set: int, engine: str):
 
 
 def list_set_links(id: int, scope_list: list):
-    links = scope_list[id][2]
+    links = scope_list[id]['links']
     for entry in links:
         entry = color_link(entry)
         print(f'> {entry}')
@@ -122,8 +143,10 @@ def main():
     
     div_str = '———\n'
 
-    txt = txt_reader.make_list(scopefile)
-    scope_list = scopetools.make_list(txt)
+    with open('scopes.json', 'r') as scopefile:
+        scope_list = json.load(scopefile)['sets']
+
+
     engine_list = list(engine_dict.keys())
 
     ## ++ engine_select
@@ -154,10 +177,11 @@ def main():
     print("the following scope sets were found. please select one by its numerical ID to proceed.")
     print(make_note() + " add a ? after any set ID to list the links it contains.")
 
+
     options = ""
     for i in range(len(scope_list)):
-        entry = f'{scope_list[i][0]}:{scope_list[i][1]}'
-        if i != len(engine_list) - 1:
+        entry = f"{i}:{scope_list[i]['label']}"
+        if i != len(scope_list) - 1:
             entry += ' / '
         
         options += entry
@@ -165,9 +189,11 @@ def main():
     print(color_options(f'[{options}]'))
 
     selected_set = validated_input(scope_list)
-    selected_set = scope_list[selected_set][2]
+    selected_set = scope_list[selected_set]['links']
+
+    print(selected_set)
     
-    set_links = scopetools.format_set(selected_set)
+    set_links = format_set(selected_set)
     
     ## -- set_select
 

@@ -1,0 +1,17 @@
+{
+    "files": [
+        "README.md",
+        "replicant_search.exe",
+        "replicant_search.py",
+        "scopes.txt"
+    ],
+    "dirs": [
+        ".git",
+        "__pycache__",
+        ".vscode",
+        "build",
+        "installer",
+        "misc",
+        "tmp"
+    ]
+}
